@@ -53,7 +53,7 @@ for t in range(0,5):
 		
 		#Back-propagation phase
 		for j in range(0,3):
-			weights[j] = weights[j] - learn_rate*(output-targ[i])*input[i][j];
+			weights[j] = weights[j] - learn_rate*(output-targ[i])*input[i][j]
 			
 
 
