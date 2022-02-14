@@ -20,7 +20,9 @@ def dist_f(dat, cent):
 # Usefull data, feel free to add the ones you may need
 # for your own implementation of the algorithm
 
-nb_k = 4
+eps = 0.001
+nb_k = 5
+l = 0
 
 
 # Read data and skip the header
@@ -36,25 +38,71 @@ nb_dim, nb_dat = np.shape(input_data)
 init_pos = np.random.randint(low=0, high=nb_dat, size=nb_k)
 
 centers = input_data[:,init_pos]
+new_centers = np.zeros((nb_dim, nb_k))
 nb_points_per_center = np.zeros((nb_k))
 
 ############################### ################################
 #      Main loop, until the new centers do not move anymore
 ############################### ################################
 
+# Emulate a do-while loop 
+while True:
 
+	l = l + 1
+	
+	all_dist = 0.0
+	
+	# Reset the working memory from the previous iteration
+	new_centers[:,:] = 0.0
+	nb_points_per_center[:] = 0
 	
 	################################ ################################
 	#         Association phase, loop on the data points
 	################################ ################################
 	
+	for i in range(0, nb_dat):
+		
+		# Find the nearest point
+		k_min = 0
+		dist_min = dist_f(input_data[:,i], centers[:,0])
+		for j in range(1, nb_k):
+			dist_temp = dist_f(input_data[:,i], centers[:,j])
+			if(dist_temp <= dist_min):
+				k_min = np.copy(j)
+				dist_min = np.copy(dist_temp)
+				
+		all_dist += dist_min
+		
+		# Use in advance the new_centers vector for summing the positions
+		new_centers[:,k_min] += input_data[:,i]
+		
+		# Update the number of points associated with this cluster center
+		nb_points_per_center[k_min] += 1
 		
 	
 	################################ ################################
 	#           Update phase, calculate the new centers
 	################################ ################################
 	
+	for i in range(0, nb_k):
+		if(nb_points_per_center[i] > 0):
+			new_centers[:,i] /= nb_points_per_center[i]
 	
+	# Compute the sum of distances between the centers and the new ones
+	cent_mov = 0.0
+	for i in range(0, nb_k):
+		cent_mov += dist_f(centers[:,i], new_centers[:,i])
+	print ("Step :", l, " error :", all_dist/nb_dat, " cent. move :", cent_mov)
+	
+	# Effectivly move the centers by puting them at the centroids position
+	for i in range(0, nb_k):
+		if(nb_points_per_center[i] > 0):
+			centers[:,i] = new_centers[:,i]
+	
+	# End the loop if the overall distance is less than a defined epsilon
+	# or if too much iteration has been reached
+	if(cent_mov < eps or l > 100):
+		break
 
 ################################ ################################
 #      Save the ending centroid position for visualisation
