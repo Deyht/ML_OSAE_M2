@@ -106,7 +106,7 @@ def create_train_aug(i, rf_id, rf_scale):
 		
 		transform = A.Compose([
 			#Affine here act more as an aspect ratio transform than scaling
-			#A.Affine(scale=(0.9,1.1), translate_px=(-4,4), rotate=(-10,10), fit_output=False, interpolation=1, p=1.0),
+			A.Affine(scale=(0.9,1.1), translate_px=(-4,4), rotate=(-10,10), fit_output=False, interpolation=1, p=1.0),
 			
 			#Un-comment for scale augment 
 			#A.SmallestMaxSize(max_size=l_scale, interpolation=1, p=1.0),
@@ -116,8 +116,8 @@ def create_train_aug(i, rf_id, rf_scale):
 
 			A.HorizontalFlip(p=0.5),
 			
-			#A.ColorJitter(brightness=(0.75,1.33), contrast=(0.75,1.33), saturation=(0.75,1.33), hue=0.1, p=1.0),
-			#A.ToGray(p=0.02),
+			A.ColorJitter(brightness=(0.75,1.33), contrast=(0.75,1.33), saturation=(0.75,1.33), hue=0.1, p=1.0),
+			A.ToGray(p=0.02),
 			
 			#A.OneOf([
 	        #	A.ISONoise(p=0.1),
